@@ -37,7 +37,8 @@
         {
           "cameraPermissionText": "Light-thermometer needs access to your Camera."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {

@@ -1,43 +1,38 @@
 import Cam from "./Cam";
 import Flicker from "./Flicker";
 import React, { useEffect, useState, useRef } from "react";
-import { Button, View, TouchableOpacity, Text } from "react-native";
-import { useImage } from "@shopify/react-native-skia";
-import {
-  Camera,
-  useCameraDevice,
-  useCameraFormat,
-} from "react-native-vision-camera";
+import { Button, View, TouchableOpacity, Text, Image } from "react-native";
+import CountDown from "./CountDown";
+import * as Brightness from "expo-brightness";
+import LinkButton from "./LinkButton";
 
-function Driver() {
-  const [kelvin, setKelvin] = useState(1000);
+function Driver({ setPage, kelvin, setKelvin }) {
+  const min = 1600;
   const [flicker, setFlicker] = useState(false);
+  const [luv, setLuv] = useState([0, 0, 0]);
   const [readings, setReadings] = useState([]);
-  const format = useCameraFormat(device, [
-    { photoResolution: { width: 100, height: 100 } },
-  ]);
-  const camera = useRef(null);
-  const device = useCameraDevice("front");
+  const [result, setResult] = useState(0);
+  const [startCountdown, setStartCountdown] = useState(false);
+  const [brightness, setBrightness] = useState(0.5);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Brightness.requestPermissionsAsync();
+      if (status === "granted") {
+        Brightness.setSystemBrightnessAsync(brightness);
+      }
+    })();
+  }, [brightness]);
 
   function startFlicker() {
-    if (!flicker) {
+    if (startCountdown) {
       return (
-        <TouchableOpacity onPressIn={() => setFlicker(true)}>
-          <Text
-            style={{
-              position: "absolute",
-              top: 500,
-              left: 150,
-              color: "white",
-              backgroundColor: "black",
-              padding: 10,
-            }}
-          >
-            Start Flicker
-          </Text>
-        </TouchableOpacity>
+        <CountDown
+          setFlicker={setFlicker}
+          setStartCountdown={setStartCountdown}
+        />
       );
-    } else {
+    } else if (flicker) {
       return (
         <Flicker
           kelvin={kelvin}
@@ -45,73 +40,213 @@ function Driver() {
           setFlicker={setFlicker}
         />
       );
+    } else {
+      return explainer();
     }
   }
-
-  function processImage(photo) {
-    const img = useImage(photo);
-    img.readPixels().then((data) => {
-      let sum = [0, 0, 0];
-      for (let i = 0; i < data.length; i += 3) {
-        const rgb = [data[i], data[i + 1], data[i + 2]];
-        const luv = rgb2luv(rgb);
-        sum[0] += luv[0];
-        sum[1] += luv[1];
-        sum[2] += luv[2];
+  function handleTakeReading() {
+    const reading = [luv[0], luv[1]];
+    console.log(reading);
+    setReadings((prev) => [...prev, reading]);
+  }
+  function handleCalculateCam(data) {
+    let diff = 100;
+    let diffIndex = 0;
+    let diffArray = [];
+    for (let i = 0; i < data.length - 1; i += 2) {
+      let uDiff = Math.abs(data[i][0] - data[i + 1][0]);
+      let vDiff = Math.abs(data[i][1] - data[i + 1][1]);
+      let uvDiff = Math.sqrt(uDiff ** 2 + vDiff ** 2);
+      uvDiff = Math.round(uvDiff * 100) / 100;
+      diffArray.push(uvDiff);
+    }
+    let diffArrayNormal = [];
+    for (let i = 1; i < diffArray.length - 1; i++) {
+      diffArrayNormal.push((diffArray[i] + diffArray[i + 1]) / 2);
+    }
+    diffArrayNormal.push(diffArray[diffArray.length - 1]);
+    console.log(diffArrayNormal);
+    diffIndex = diffArrayNormal.length - 1;
+    diff = diffArrayNormal[diffArrayNormal.length - 1];
+    for (let i = diffArrayNormal.length - 2; i > 0; i--) {
+      console.log(diffArrayNormal[i], diff);
+      if (diffArrayNormal[i] < diff) {
+        diff = diffArrayNormal[i];
+        diffIndex = i;
       }
-      const avg = sum.map((x) => x / (data.length / 3));
-      console.log(avg);
-      return [avg[1], avg[2]];
-    });
-
-    function rgb2luv(rgb) {
-      let luv = [0, 0, 0];
-      luv[0] = 0.257 * rgb[0] + 0.504 * rgb[1] + 0.098 * rgb[2] + 16;
-      luv[1] = -0.148 * rgb[0] - 0.291 * rgb[1] + 0.439 * rgb[2] + 128;
-      luv[2] = 0.439 * rgb[0] - 0.368 * rgb[1] - 0.071 * rgb[2] + 128;
-      return luv;
     }
+    diffIndex++;
+    console.log(diffIndex);
+    setKelvin(diffIndex * 400 + min);
+    setPage("lightBooth");
   }
+  useEffect(() => {
+    console.log(result);
+  }, [result]);
 
   useEffect(() => {
     startFlicker();
-  }, [flicker]);
-  useEffect(() => {
-    if (kelvin > 8000) {
-      setFlicker(false);
-      setKelvin(1000);
+    if (flicker) {
+      setBrightness(1);
+    } else {
+      setBrightness(0.5);
     }
-    handleTakePhoto();
+  }, [flicker, startCountdown]);
+
+  useEffect(() => {
+    if (flicker) {
+      handleTakeReading();
+      if (kelvin >= 9000) {
+        setFlicker(false);
+        setKelvin(1000);
+        handleCalculateCam(readings);
+        setReadings([]);
+      }
+    }
   }, [kelvin, flicker]);
 
-  async function handleTakePhoto() {
-    if (camera.current) {
-      await camera.current
-        .takePhoto({
-          quality: 1,
-          base64: true,
-        })
-        .then((snap) => {
-          setReadings([...readings, snap]);
-        });
-    }
+  function explainer() {
+    return (
+      <View
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 24,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          display: "inline-flex",
+          gap: 16,
+        }}
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Image
+            source={require("../assets/Thermometer.png")}
+            style={{
+              width: 96,
+              height: 96,
+              resizeMode: "contain",
+            }}
+          />
+          <Text
+            style={{
+              alignSelf: "center",
+              textAlign: "center",
+              color: "black",
+              fontSize: 32,
+              fontWeight: "400",
+              wordWrap: "break-word",
+              padding: 16,
+
+              fontFamily: "Poiret One",
+            }}
+          >
+            Ambient Light Measurement
+          </Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: "#FFE86E",
+            borderRadius: 22,
+            padding: 16,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 24,
+            display: "inline-flex",
+          }}
+        >
+          <Text
+            style={{
+              color: "black",
+              fontSize: 22,
+              fontWeight: "400",
+              padding: 8,
+              fontFamily: "Poiret One",
+              letterSpacing: -0.2,
+            }}
+          >
+            When the countdown begins, hold your device about 3 inches or about
+            8 cm from a stationary surface. Make sure you can see light from the
+            screen on the surface.
+          </Text>
+        </View>
+
+        <View
+          style={{
+            alignSelf: "center",
+            padding: 16,
+            backgroundColor: "#FFE86E",
+            borderRadius: 22,
+            justifyContent: "center",
+            alignItems: "center",
+            display: "inline-flex",
+          }}
+        >
+          <Image
+            source={require("../assets/warning.png")}
+            style={{ width: 64, height: 64, resizeMode: "contain" }}
+          />
+          <Text
+            style={{
+              color: "black",
+              fontSize: 22,
+              letterSpacing: -0.2,
+              fontWeight: "400",
+              wordWrap: "break-word",
+
+              fontFamily: "Poiret One",
+            }}
+          >
+            Warning: the measurement process involves the screen flashing
+            rapidly for a few seconds. You should avoid looking at the screen
+            directly, especially if you are photosensitive.
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPressIn={() => {
+            setStartCountdown(true);
+            console.log("cd");
+          }}
+          style={{
+            backgroundColor: "cyan",
+            borderEndWidth: 4,
+            borderBottomWidth: 4,
+            borderColor: "rgba(0,0,0,0.2)",
+            borderRadius: 16,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 16,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              fontFamily: "Poiret One",
+            }}
+          >
+            Begin
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
   return (
     <>
-      <Camera
-        style={{
-          height: "50%",
-          position: "absolute",
-          width: "100%",
-          top: 0,
-          zIndex: -1,
-        }}
-        photo={true}
-        format={format}
-        device={device}
-        isActive={true}
-        ref={camera}
-      />
+      <View style={{ position: "absolute", left: 10, top: 60, zIndex: 2 }}>
+        <LinkButton
+          icon={require("../assets/arrow.png")}
+          target="home"
+          setPage={setPage}
+          width={60}
+          height={60}
+        />
+      </View>
+      <Cam luv={luv} setLuv={setLuv} />
       {startFlicker()}
     </>
   );
