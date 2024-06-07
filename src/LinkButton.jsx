@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, Image, TouchableOpacity, View } from "react-native";
+import Logo from "./Logo";
 
 const LinkButton = ({
   setPage,
@@ -12,6 +13,7 @@ const LinkButton = ({
   height,
   kelvin,
   setKelvin,
+  onPress,
 }) => {
   function textarea() {
     if (text === "") {
@@ -37,10 +39,10 @@ const LinkButton = ({
   return (
     <TouchableOpacity
       onPressIn={() => {
-        if (kelvin) {
-          setKelvin(kelvin);
-        }
         setPage(target);
+        if (onPress) {
+          onPress();
+        }
       }}
     >
       <View
@@ -48,6 +50,10 @@ const LinkButton = ({
           width: width ? width : "100%",
           height: height ? height : 100,
           backgroundColor: "#FFE86E",
+          borderEndColor: "rgba(0, 0, 0, 0.2)",
+          borderEndWidth: 4,
+          borderBottomWidth: 4,
+          borderColor: "rgba(0, 0, 0, 0.2)",
           borderRadius: 16,
           justifyContent: "center",
           alignItems: "center",

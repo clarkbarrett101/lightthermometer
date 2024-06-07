@@ -10,15 +10,27 @@ import SavedTemps from "./src/SavedTemps";
 
 export default function App() {
   const [kelvin, setKelvin] = useState(5500);
+  const [newRoom, setNewRoom] = useState(false);
   const [page, setPage] = React.useState("home");
   const pages = {
     home: <Home setPage={setPage} />,
     driver: <Driver setPage={setPage} kelvin={kelvin} setKelvin={setKelvin} />,
     lightBooth: (
-      <LightBooth setPage={setPage} kelvin={kelvin} setKelvin={setKelvin} />
+      <LightBooth
+        setPage={setPage}
+        kelvin={kelvin}
+        setKelvin={setKelvin}
+        setNewRoom={setNewRoom}
+      />
     ),
     savedTemps: (
-      <SavedTemps setPage={setPage} kelvin={kelvin} setKelvin={setKelvin} />
+      <SavedTemps
+        setPage={setPage}
+        kelvin={kelvin}
+        setKelvin={setKelvin}
+        newRoom={newRoom}
+        setNewRoom={setNewRoom}
+      />
     ),
   };
   const { hasPermission, requestPermission } = useCameraPermission();

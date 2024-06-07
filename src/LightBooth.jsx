@@ -6,7 +6,7 @@ import { Dimensions } from "react-native";
 import Slider from "./Slider";
 import LinkButton from "./LinkButton";
 
-export default function LightBooth({ setPage, kelvin, setKelvin }) {
+export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
   const sw = Dimensions.get("window").width;
   const sh = Dimensions.get("window").height;
   const preloadKelvin = kelvin_table[1000];
@@ -113,6 +113,17 @@ export default function LightBooth({ setPage, kelvin, setKelvin }) {
           icon={require("../assets/arrow.png")}
           width={100}
           height={50}
+        />
+        <LinkButton
+          text="Save This Temperature"
+          target="savedTemps"
+          setPage={setPage}
+          icon={require("../assets/save.png")}
+          width={100}
+          height={50}
+          kelvin={kelvin}
+          setKelvin={setNewRoom}
+          onPress={() => setNewRoom(true)}
         />
       </View>
     </View>

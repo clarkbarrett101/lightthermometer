@@ -29,12 +29,12 @@ function CountDown({ setFlicker, setStartCountdown }) {
         top: 0,
         left: 0,
         zIndex: 10,
-        backgroundColor: "black",
+        backgroundColor: "white",
       }}
     >
       <Text
         style={{
-          color: "white",
+          color: "black",
           fontSize: 100,
           textAlign: "center",
           marginTop: "50%",

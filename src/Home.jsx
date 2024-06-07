@@ -14,6 +14,7 @@ export default function Home({ setPage }) {
           right: 0,
           top: 0,
           height: "100%",
+          zIndex: 1,
         }}
       />
       <View
@@ -25,6 +26,7 @@ export default function Home({ setPage }) {
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
+          zIndex: 2,
         }}
       >
         <LinkButton
@@ -50,19 +52,31 @@ export default function Home({ setPage }) {
         />
         <Text
           style={{
-            fontSize: 36,
+            fontSize: 48,
             textAlign: "center",
             fontFamily: "Poiret One",
+            padding: 16,
           }}
         >
           Light Thermometer
         </Text>
-        <Text style={{ fontSize: 24, fontFamily: "Poiret One" }}>by</Text>
-        <Image
-          source={require("../assets/warning.png")}
-          style={{ height: 200, width: 200 }}
-        />
       </View>
     </>
   );
 }
+/*
+<View style={{ display: "flex", flexDirection: "row" }}>
+<Text
+  style={{
+    fontSize: 24,
+    fontFamily: "Poiret One",
+    flex: 1,
+    textAlign: "center",
+    marginRight: -64,
+  }}
+>
+  by
+</Text>
+<Logo style={{ width: 64, height: 64 }} />
+</View>
+*/

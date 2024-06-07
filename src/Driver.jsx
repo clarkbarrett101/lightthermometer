@@ -210,6 +210,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
         <TouchableOpacity
           onPressIn={() => {
             setStartCountdown(true);
+            setKelvin(min);
             console.log("cd");
           }}
           style={{
