@@ -23,7 +23,8 @@ export default function Home({ setPage }) {
           flexDirection: "column",
           gap: 16,
           padding: 16,
-          justifyContent: "center",
+          paddingBottom: 48,
+          justifyContent: "flex-end",
           alignItems: "center",
           height: "100%",
           zIndex: 2,
@@ -33,22 +34,26 @@ export default function Home({ setPage }) {
           text="Measure light temperature"
           target="driver"
           setPage={setPage}
-          icon={require("../assets/Thermometer.png")}
+          icon={require("../assets/lighttherm.png")}
           fontSize={24}
+          height={100}
         />
         <LinkButton
           text="Simulate lighting conditions"
           target="lightBooth"
           setPage={setPage}
-          icon={require("../assets/light_panel.png")}
+          icon={require("../assets/lightbooth.png")}
           fontSize={24}
+          height={100}
         />
         <LinkButton
           text="Saved temperatures"
           target="savedTemps"
           setPage={setPage}
-          icon={require("../assets/save.png")}
+          icon={require("../assets/list.png")}
           fontSize={24}
+          height={80}
+          padding={16}
         />
         <Text
           style={{
@@ -56,10 +61,29 @@ export default function Home({ setPage }) {
             textAlign: "center",
             fontFamily: "Poiret One",
             padding: 16,
+            paddingBottom: 0,
           }}
         >
           Light Thermometer
         </Text>
+        <Text
+          style={{
+            fontSize: 24,
+            textAlign: "center",
+            fontFamily: "Poiret One",
+            padding: 0,
+          }}
+        >
+          by
+        </Text>
+        <Image
+          source={require("../assets/logo.png")}
+          style={{
+            width: 96,
+            height: 96,
+            resizeMode: "contain",
+          }}
+        />
       </View>
     </>
   );

@@ -6,24 +6,7 @@ function Flicker({ kelvin, setKelvin, flicker, setFlicker }) {
   const k = kelvin_table[kelvin];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setKelvin((prev) => {
-        if (prev < 9000) {
-          return prev + 200;
-        } else {
-          setFlicker(false);
-          clearInterval(interval);
-          return 9000;
-        }
-      });
-    }, 200);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-  useEffect(() => {
-    if (kelvin % 400 == 0) {
+    if (kelvin >= 2000) {
       const [r, g, b] = kelvin_table[kelvin];
       setScreenColor(`rgb(${r},${g},${b})`);
     } else {

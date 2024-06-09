@@ -48,7 +48,7 @@ export default function SavedTemps({
 
   function getTemps() {
     let temps = [];
-    for (let i = 0; i < rawData.length; i++) {
+    for (let i = rawData.length - 1; i >= 0; i--) {
       temps.push(
         <Temp
           setPage={setPage}
@@ -69,7 +69,7 @@ export default function SavedTemps({
     <>
       <View style={{ position: "absolute", left: 10, top: 60, zIndex: 2 }}>
         <LinkButton
-          icon={require("../assets/arrow.png")}
+          icon={require("../assets/back.png")}
           target="home"
           setPage={setPage}
           width={60}
@@ -133,6 +133,9 @@ function Temp({
   setRawData,
 }) {
   const [name, setName] = useState(label);
+  useEffect(() => {
+    setName(label);
+  }, [label]);
 
   async function setRoomName(text) {
     rawData[roomIdx][0] = text;
@@ -233,7 +236,7 @@ function Temp({
             lineHeight: 42,
           }}
         >
-          {temp + "K"}
+          {temp} K
         </Text>
       </View>
       <TouchableOpacity
@@ -243,7 +246,7 @@ function Temp({
         }}
       >
         <Image
-          source={require("../assets/light_panel.png")}
+          source={require("../assets/lightbooth.png")}
           style={{
             height: 48,
             width: 48,

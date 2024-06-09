@@ -7,7 +7,7 @@ import * as Brightness from "expo-brightness";
 import LinkButton from "./LinkButton";
 
 function Driver({ setPage, kelvin, setKelvin }) {
-  const min = 1600;
+  const min = 2000;
   const [flicker, setFlicker] = useState(false);
   const [luv, setLuv] = useState([0, 0, 0]);
   const [readings, setReadings] = useState([]);
@@ -45,22 +45,27 @@ function Driver({ setPage, kelvin, setKelvin }) {
     }
   }
   function handleTakeReading() {
-    const reading = [luv[0], luv[1]];
-    console.log(reading);
+    const reading = [luv[0], luv[1], kelvin];
     setReadings((prev) => [...prev, reading]);
+    console.log(reading);
   }
-  function handleCalculateCam(data) {
+  function handleCalculateCam() {
+    const data = readings;
     let diff = 100;
     let diffIndex = 0;
     let diffArray = [];
-    for (let i = 0; i < data.length - 1; i += 2) {
-      let uDiff = Math.abs(data[i][0] - data[i + 1][0]);
-      let vDiff = Math.abs(data[i][1] - data[i + 1][1]);
+    const control = data[0];
+    console.log(control);
+    for (let i = 2; i < data.length - 1; i += 1) {
+      let uDiff = Math.abs(data[i][0] - control[0]);
+      let vDiff = Math.abs(data[i][1] - control[1]);
       let uvDiff = Math.sqrt(uDiff ** 2 + vDiff ** 2);
       uvDiff = Math.round(uvDiff * 100) / 100;
+      console.log(data[i][2], uvDiff);
       diffArray.push(uvDiff);
     }
     let diffArrayNormal = [];
+    diffArrayNormal.push(diffArray[0]);
     for (let i = 1; i < diffArray.length - 1; i++) {
       diffArrayNormal.push((diffArray[i] + diffArray[i + 1]) / 2);
     }
@@ -75,9 +80,9 @@ function Driver({ setPage, kelvin, setKelvin }) {
         diffIndex = i;
       }
     }
-    diffIndex++;
+    diffIndex += 2;
     console.log(diffIndex);
-    setKelvin(diffIndex * 400 + min);
+    setKelvin(diffIndex * 200 + min);
     setPage("lightBooth");
   }
   useEffect(() => {
@@ -88,18 +93,36 @@ function Driver({ setPage, kelvin, setKelvin }) {
     startFlicker();
     if (flicker) {
       setBrightness(1);
+      setKelvin(min);
     } else {
       setBrightness(0.5);
     }
   }, [flicker, startCountdown]);
+  useEffect(() => {
+    if (flicker) {
+      const interval = setInterval(() => {
+        setKelvin((prev) => {
+          if (prev < 9000) {
+            return prev + 200;
+          } else {
+            clearInterval(interval);
+            return 9000;
+          }
+        });
+      }, 100);
 
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [flicker]);
   useEffect(() => {
     if (flicker) {
       handleTakeReading();
       if (kelvin >= 9000) {
         setFlicker(false);
-        setKelvin(1000);
-        handleCalculateCam(readings);
+        setKelvin(min);
+        handleCalculateCam();
         setReadings([]);
       }
     }
@@ -116,6 +139,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
           justifyContent: "center",
           alignItems: "center",
           display: "inline-flex",
+          backgroundColor: "#cfffff",
           gap: 16,
         }}
       >
@@ -126,7 +150,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
           }}
         >
           <Image
-            source={require("../assets/Thermometer.png")}
+            source={require("../assets/lighttherm.png")}
             style={{
               width: 96,
               height: 96,
@@ -170,43 +194,13 @@ function Driver({ setPage, kelvin, setKelvin }) {
               letterSpacing: -0.2,
             }}
           >
-            When the countdown begins, hold your device about 3 inches or about
-            8 cm from a stationary surface. Make sure you can see light from the
-            screen on the surface.
+            When the countdown begins, hold your device about 3 inches from a
+            stationary surface. Make sure you can see light from the screen on
+            that surface. Hold the device still for another 5 seconds as the
+            screen changes color.
           </Text>
         </View>
 
-        <View
-          style={{
-            alignSelf: "center",
-            padding: 16,
-            backgroundColor: "#FFE86E",
-            borderRadius: 22,
-            justifyContent: "center",
-            alignItems: "center",
-            display: "inline-flex",
-          }}
-        >
-          <Image
-            source={require("../assets/warning.png")}
-            style={{ width: 64, height: 64, resizeMode: "contain" }}
-          />
-          <Text
-            style={{
-              color: "black",
-              fontSize: 22,
-              letterSpacing: -0.2,
-              fontWeight: "400",
-              wordWrap: "break-word",
-
-              fontFamily: "Poiret One",
-            }}
-          >
-            Warning: the measurement process involves the screen flashing
-            rapidly for a few seconds. You should avoid looking at the screen
-            directly, especially if you are photosensitive.
-          </Text>
-        </View>
         <TouchableOpacity
           onPressIn={() => {
             setStartCountdown(true);
@@ -226,7 +220,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
         >
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 32,
               fontFamily: "Poiret One",
             }}
           >
@@ -240,7 +234,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
     <>
       <View style={{ position: "absolute", left: 10, top: 60, zIndex: 2 }}>
         <LinkButton
-          icon={require("../assets/arrow.png")}
+          icon={require("../assets/back.png")}
           target="home"
           setPage={setPage}
           width={60}

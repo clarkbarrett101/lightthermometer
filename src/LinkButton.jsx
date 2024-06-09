@@ -14,6 +14,7 @@ const LinkButton = ({
   kelvin,
   setKelvin,
   onPress,
+  padding,
 }) => {
   function textarea() {
     if (text === "") {
@@ -49,7 +50,7 @@ const LinkButton = ({
         style={{
           width: width ? width : "100%",
           height: height ? height : 100,
-          backgroundColor: "#FFE86E",
+          backgroundColor: "#FFFFAF",
           borderEndColor: "rgba(0, 0, 0, 0.2)",
           borderEndWidth: 4,
           borderBottomWidth: 4,
@@ -60,7 +61,7 @@ const LinkButton = ({
           gap: 8,
           display: hidden ? "none" : "flex",
           flexDirection: "row",
-          padding: 4,
+          padding: padding ? padding : 4,
         }}
       >
         <Image

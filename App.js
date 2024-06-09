@@ -1,5 +1,5 @@
 import { useCameraPermission } from "react-native-vision-camera";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Driver from "./src/Driver";
 import * as Brightness from "expo-brightness";
 import React, { useEffect } from "react";
@@ -7,6 +7,9 @@ import LightBooth from "./src/LightBooth";
 import { useFonts, PoiretOne_400Regular } from "@expo-google-fonts/poiret-one";
 import Home from "./src/Home";
 import SavedTemps from "./src/SavedTemps";
+import * as SplashScreen from "expo-splash-screen";
+import { View } from "react-native";
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [kelvin, setKelvin] = useState(5500);
@@ -37,9 +40,9 @@ export default function App() {
   let [fontsLoaded] = useFonts({
     PoiretOne_400Regular,
   });
-  useEffect(() => {
-    if (!fontsLoaded) {
-      return;
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
@@ -59,6 +62,12 @@ export default function App() {
   useEffect(() => {
     console.log(page);
   }, [page]);
-
-  return pages[page];
+  if (!fontsLoaded) {
+    return null;
+  }
+  return (
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      {pages[page]}
+    </View>
+  );
 }
