@@ -4,7 +4,7 @@
     "slug": "light-thermometer",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/app_icon.png",
+    "icon": "../assets/app_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "../assets/splash.png",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "../assets/app_icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -38,7 +38,11 @@
           "cameraPermissionText": "Light-thermometer needs access to your Camera."
         }
       ],
-      "expo-font"
+      "expo-font",[
+      "expo-camera",
+        {
+          "cameraPermission": "Light-thermometer needs access to your Camera."
+        }]
     ],
     "extra": {
       "eas": {

@@ -10,7 +10,7 @@ import {
 } from "react-native-vision-camera";
 import { useSharedValue } from "react-native-worklets-core";
 
-function Cam({ luv, setLuv }) {
+function Cam({ rgb, setRgb }) {
   const camera = useRef(null);
   const canvas = useRef(null);
   const device = useCameraDevice("front");
@@ -26,9 +26,9 @@ function Cam({ luv, setLuv }) {
       const data = new Uint8Array(buffer);
       let sum = [0, 0, 0];
       for (let i = 0; i < data.length; i += 4) {
-        sum[0] += data[i];
+        sum[2] += data[i];
         sum[1] += data[i + 1];
-        sum[2] += data[i + 2];
+        sum[0] += data[i + 2];
       }
       const avg = sum.map((x) => x / (data.length / 4));
       average.value = avg;
@@ -36,22 +36,16 @@ function Cam({ luv, setLuv }) {
   }, []);
   useEffect(() => {
     const interval = setInterval(() => {
-      const [r, g, b] = [average.value[0], average.value[1], average.value[2]];
-      setLuv(rgb2luv(r, g, b));
-      setScreenColor(`rgb(${r},${g},${b})`);
+      let [r, g, b] = [average.value[0], average.value[1], average.value[2]];
+      r = Math.round(r * 100) / 100;
+      g = Math.round(g * 100) / 100;
+      b = Math.round(b * 100) / 100;
+      setRgb([r, g, b]);
     }, 50);
     return () => {
       clearInterval(interval);
     };
   }, []);
-  function rgb2luv(r, g, b) {
-    let l = 0.299 * r + 0.587 * g + 0.114 * b;
-    let u = (r - l) * 0.492;
-    let v = (b - l) * 0.877;
-    u = Math.round(u * 100) / 100;
-    v = Math.round(v * 100) / 100;
-    return [u, v];
-  }
   return (
     <Camera
       fps={30}
@@ -61,9 +55,7 @@ function Cam({ luv, setLuv }) {
       format={format}
       pixelFormat="rgb"
       isActive={true}
-      style={{
-        display: "none",
-      }}
+      style={{ width: 100, height: 100 }}
     />
   );
 }

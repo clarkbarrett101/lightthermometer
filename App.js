@@ -9,12 +9,21 @@ import Home from "./src/Home";
 import SavedTemps from "./src/SavedTemps";
 import * as SplashScreen from "expo-splash-screen";
 import { View } from "react-native";
-SplashScreen.preventAutoHideAsync();
+import PaintScanner from "./src/PaintScanner";
+import DoublePic from "./src/DoublePic";
+//SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [kelvin, setKelvin] = useState(5500);
   const [newRoom, setNewRoom] = useState(false);
   const [page, setPage] = React.useState("home");
+  const { hasPermission, requestPermission } = useCameraPermission();
+  useEffect(() => {
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission]);
+  /*ß
   const pages = {
     home: <Home setPage={setPage} />,
     driver: <Driver setPage={setPage} kelvin={kelvin} setKelvin={setKelvin} />,
@@ -36,10 +45,9 @@ export default function App() {
       />
     ),
   };
-  const { hasPermission, requestPermission } = useCameraPermission();
-  let [fontsLoaded] = useFonts({
-    PoiretOne_400Regular,
-  });
+    let [fontsLoaded] = useFonts({
+      PoiretOne_400Regular,
+    });
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -54,11 +62,7 @@ export default function App() {
       }
     })();
   }, []);
-  useEffect(() => {
-    if (!hasPermission) {
-      requestPermission();
-    }
-  }, [hasPermission]);
+
   useEffect(() => {
     console.log(page);
   }, [page]);
@@ -67,7 +71,9 @@ export default function App() {
   }
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      {pages[page]}
+    {pages[page]}
     </View>
   );
+  */
+  return <PaintScanner />;
 }
