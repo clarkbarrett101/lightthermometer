@@ -7,13 +7,13 @@ import * as Brightness from "expo-brightness";
 import LinkButton from "./LinkButton";
 
 function Driver({ setPage, kelvin, setKelvin }) {
-  const min = 2000;
+  const min = 1800;
   const [flicker, setFlicker] = useState(false);
   const [luv, setLuv] = useState([0, 0, 0]);
   const [readings, setReadings] = useState([]);
   const [result, setResult] = useState(0);
   const [startCountdown, setStartCountdown] = useState(false);
-  const [brightness, setBrightness] = useState(0.5);
+  const [brightness, setBrightness] = useState(1);
 
   useEffect(() => {
     (async () => {
@@ -92,10 +92,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
   useEffect(() => {
     startFlicker();
     if (flicker) {
-      setBrightness(1);
       setKelvin(min);
-    } else {
-      setBrightness(0.5);
     }
   }, [flicker, startCountdown]);
   useEffect(() => {

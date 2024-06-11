@@ -23,7 +23,7 @@ export default function Home({ setPage }) {
           flexDirection: "column",
           gap: 16,
           padding: 16,
-          paddingBottom: 48,
+          paddingBottom: 32,
           justifyContent: "flex-end",
           alignItems: "center",
           height: "100%",
@@ -79,28 +79,21 @@ export default function Home({ setPage }) {
         <Image
           source={require("../assets/logo.png")}
           style={{
-            width: 96,
+            width: 72,
             height: 96,
             resizeMode: "contain",
+            marginLeft: -4,
+          }}
+        />
+        <Image
+          source={require("../assets/slogan.png")}
+          style={{
+            width: 125,
+            resizeMode: "contain",
+            marginTop: -48,
           }}
         />
       </View>
     </>
   );
 }
-/*
-<View style={{ display: "flex", flexDirection: "row" }}>
-<Text
-  style={{
-    fontSize: 24,
-    fontFamily: "Poiret One",
-    flex: 1,
-    textAlign: "center",
-    marginRight: -64,
-  }}
->
-  by
-</Text>
-<Logo style={{ width: 64, height: 64 }} />
-</View>
-*/

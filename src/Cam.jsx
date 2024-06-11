@@ -10,7 +10,7 @@ import {
 } from "react-native-vision-camera";
 import { useSharedValue } from "react-native-worklets-core";
 
-function Cam({ rgb, setRgb }) {
+function Cam({ luv, setLuv }) {
   const camera = useRef(null);
   const canvas = useRef(null);
   const device = useCameraDevice("front");
@@ -36,16 +36,20 @@ function Cam({ rgb, setRgb }) {
   }, []);
   useEffect(() => {
     const interval = setInterval(() => {
-      let [r, g, b] = [average.value[0], average.value[1], average.value[2]];
-      r = Math.round(r * 100) / 100;
-      g = Math.round(g * 100) / 100;
-      b = Math.round(b * 100) / 100;
-      setRgb([r, g, b]);
+      const [l, u, v] = RGB2LUV(average.value);
+      setLuv([u, v]);
     }, 50);
     return () => {
       clearInterval(interval);
     };
   }, []);
+  function RGB2LUV(rgb) {
+    let [r, g, b] = rgb;
+    const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    const u = -0.0999 * r - 0.336 * g + 0.436 * b;
+    const v = 0.615 * r - 0.5586 * g - 0.0563 * b;
+    return [l, u, v];
+  }
   return (
     <Camera
       fps={30}
@@ -55,7 +59,7 @@ function Cam({ rgb, setRgb }) {
       format={format}
       pixelFormat="rgb"
       isActive={true}
-      style={{ width: 100, height: 100 }}
+      style={{ display: "none" }}
     />
   );
 }
