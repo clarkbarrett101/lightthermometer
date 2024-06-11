@@ -8,7 +8,8 @@ import Driver from "./src/Driver";
 import LightBooth from "./src/LightBooth";
 import Home from "./src/Home";
 import SavedTemps from "./src/SavedTemps";
-SplashScreen.preventAutoHideAsync();
+import PaintScan from "./src/PaintScan";
+//SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [kelvin, setKelvin] = useState(5500);
@@ -47,6 +48,7 @@ export default function App() {
       />
     ),
   };
+  /*
   let [fontsLoaded] = useFonts({
     PoiretOne_400Regular,
   });
@@ -67,4 +69,6 @@ export default function App() {
       {pages[page]}
     </View>
   );
+  */
+  return <PaintScan />;
 }
