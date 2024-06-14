@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import kelvin_table from "./Kelvin_Table";
+import { kelvin_table } from "./Kelvin_Table";
 import { PanResponder } from "react-native";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Dimensions } from "react-native";

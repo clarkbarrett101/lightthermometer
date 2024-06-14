@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import kelvin_table from "./Kelvin_Table";
+import { kelvin_table } from "./Kelvin_Table";
 function Flicker({ kelvin, setKelvin, flicker, setFlicker }) {
   const [screenColor, setScreenColor] = useState("black");
   const k = kelvin_table[kelvin];

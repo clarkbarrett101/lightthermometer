@@ -5,15 +5,20 @@ import { Button, View, TouchableOpacity, Text, Image } from "react-native";
 import CountDown from "./CountDown";
 import * as Brightness from "expo-brightness";
 import LinkButton from "./LinkButton";
+import { kelvin_table } from "./Kelvin_Table";
+import luvTable from "./LUVTable";
 
-function Driver({ setPage, kelvin, setKelvin }) {
+export default function Driver({ setPage, kelvin, setKelvin }) {
   const min = 1800;
+  const max = 9000;
+  const mid = 5500;
   const [flicker, setFlicker] = useState(false);
   const [luv, setLuv] = useState([0, 0, 0]);
-  const [readings, setReadings] = useState([]);
-  const [result, setResult] = useState(0);
+  const [control, setControl] = useState(null);
   const [startCountdown, setStartCountdown] = useState(false);
   const [brightness, setBrightness] = useState(1);
+  const [rgb, setRgb] = useState([255, 255, 255]);
+  const kLUVtable = luvTable;
 
   useEffect(() => {
     (async () => {
@@ -44,10 +49,31 @@ function Driver({ setPage, kelvin, setKelvin }) {
       return explainer();
     }
   }
-  function handleTakeReading() {
-    const reading = [luv[0], luv[1], kelvin];
-    setReadings((prev) => [...prev, reading]);
-    console.log(reading);
+  function feedbackLoop() {
+    if (control === null) {
+      setControl(luv);
+      return mid;
+    }
+    let uDiff = control[1] - luv[1] + kLUVtable[kelvin][0];
+    let vDiff = control[2] - luv[2] + kLUVtable[kelvin][1];
+    const k = uvToKelvin(uDiff, vDiff);
+    console.log(k, luv[0], luv[1], luv[2], control[0], control[1], control[2]);
+    return k;
+  }
+  function uvToKelvin(u, v) {
+    let diff = 255;
+    let diffTemp = min;
+    for (let i = min; i < max; i += 100) {
+      let uDiff = u - kLUVtable[i][0];
+      let vDiff = v - kLUVtable[i][1];
+      let uvDiff = Math.sqrt(uDiff ** 2 + vDiff ** 2);
+      if (uvDiff < diff) {
+        diff = uDiff;
+        diffTemp = i;
+      }
+    }
+    console.log(diff);
+    return diffTemp;
   }
   function handleCalculateCam() {
     const data = readings;
@@ -85,16 +111,26 @@ function Driver({ setPage, kelvin, setKelvin }) {
     setKelvin(diffIndex * 200 + min);
     setPage("lightBooth");
   }
-  useEffect(() => {
-    console.log(result);
-  }, [result]);
 
   useEffect(() => {
     startFlicker();
-    if (flicker) {
-      setKelvin(min);
-    }
   }, [flicker, startCountdown]);
+
+  useEffect(() => {
+    if (flicker) {
+      setTimeout(() => {
+        const k = feedbackLoop();
+        if (k === kelvin) {
+          console.log("done");
+          setFlicker(false);
+          setControl(null);
+        } else {
+          setKelvin(k);
+        }
+      }, 300);
+    }
+  }, [kelvin, flicker]);
+  /*
   useEffect(() => {
     if (flicker) {
       const interval = setInterval(() => {
@@ -124,7 +160,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
       }
     }
   }, [kelvin, flicker]);
-
+*/
   function explainer() {
     return (
       <View
@@ -201,8 +237,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
         <TouchableOpacity
           onPressIn={() => {
             setStartCountdown(true);
-            setKelvin(min);
-            console.log("cd");
+            setKelvin(mid);
           }}
           style={{
             backgroundColor: "cyan",
@@ -238,9 +273,8 @@ function Driver({ setPage, kelvin, setKelvin }) {
           height={60}
         />
       </View>
-      <Cam luv={luv} setLuv={setLuv} />
+      <Cam luv={luv} setLuv={setLuv} setRgb={setRgb} />
       {startFlicker()}
     </>
   );
 }
-export default Driver;

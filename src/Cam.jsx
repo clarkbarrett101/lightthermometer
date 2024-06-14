@@ -9,7 +9,7 @@ import {
   runAtTargetFps,
 } from "react-native-vision-camera";
 import { useSharedValue } from "react-native-worklets-core";
-import { RGB2LUV } from "./RGB2LUV";
+import RGB2LUV from "./RGB2LUV";
 
 function Cam({ luv, setLuv, setRgb }) {
   const camera = useRef(null);
@@ -37,7 +37,7 @@ function Cam({ luv, setLuv, setRgb }) {
     const interval = setInterval(() => {
       setRgb(average.value);
       const [l, u, v] = RGB2LUV(average.value);
-      setLuv([u, v]);
+      setLuv([l, u, v]);
     }, 50);
     return () => {
       clearInterval(interval);

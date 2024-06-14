@@ -1,5 +1,5 @@
 import Cam from "./Cam";
-import { RGB2LUV } from "./RGB2LUV";
+import RGB2LUV from "./RGB2LUV";
 import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity } from "react-native";
 import * as Brightness from "expo-brightness";
@@ -14,172 +14,137 @@ export default function PaintScan() {
   const [greenLux, setGreenLux] = useState(0);
   const [blueLux, setBlueLux] = useState(0);
   const [uvResult, setUvResult] = useState([0, 0]);
+  const [readings, setReadings] = useState([]);
   const [stage, setStage] = useState(0);
   const [scanning, setScanning] = useState(false);
   Brightness.setBrightnessAsync(1);
 
-  function flashScreen() {
-    const colorValue = 255 * intensity;
-    switch (color) {
-      case "red":
-        setScreenColor("rgb(${colorValue}, 0, 0)");
-        break;
-      case "green":
-        setScreenColor("rgb(0, ${colorValue}, 0)");
-        break;
-      case "blue":
-        setScreenColor("rgb(0, 0, ${colorValue})");
-        break;
-      case "white":
-        setScreenColor("rgb(${colorValue}, ${colorValue}, ${colorValue})");
-        break;
-      default:
-        setScreenColor("black");
-        break;
-    }
+  function flashScreen(color = "white", intensity = 1) {
+    let [r, g, b] =
+      color === "white"
+        ? [255, 255, 255]
+        : color === "red"
+        ? [255, 0, 0]
+        : color === "green"
+        ? [0, 255, 0]
+        : color === "blue"
+        ? [0, 0, 255]
+        : [0, 0, 0];
+    r *= intensity;
+    g *= intensity;
+    b *= intensity;
+    setScreenColor(`rgb(${r},${g},${b})`);
   }
   function takeLowReading() {
     setLowReading(luv[0]);
   }
   function takeHighReading() {
-    const reading = {
-      color: screenColor,
-      low: lowReading,
-      high: luv[0],
-    };
+    let lux = luv[0] - lowReading;
+    const reading = [screenColor, lux];
     return reading;
   }
 
   function calculateRedLux(reading) {
-    const deltaLux = reading.high - reading.low;
+    const deltaLux = reading[1];
     let redLux = deltaLux / fullLux;
     redLux /= 0.299;
     setRedLux(redLux);
   }
   function calculateGreenLux(reading) {
-    const deltaLux = reading.high - reading.low;
+    const deltaLux = reading[1];
     let greenLux = deltaLux / fullLux;
     greenLux /= 0.587;
     setGreenLux(greenLux);
   }
   function calculateBlueLux(reading) {
-    const deltaLux = reading.high - reading.low;
+    const deltaLux = reading[1];
     let blueLux = deltaLux / fullLux;
     blueLux /= 0.114;
     setBlueLux(blueLux);
   }
   function calculateFullLux(reading) {
-    const deltaLux = reading.high - reading.low;
+    const deltaLux = reading[1];
     setFullLux(deltaLux);
   }
   function calculateUV() {
     const sum = redLux + greenLux + blueLux;
-    const [r, g, b] = [redLux / sum, greenLux / sum, blueLux / sum];
-    const [l, u, v] = RGB2LUV([r, g, b]);
+    let [r, g, b] = [redLux / sum, greenLux / sum, blueLux / sum];
+    let [l, u, v] = RGB2LUV([r, g, b]);
+    console.log(redLux, greenLux, blueLux);
+    u++;
+    v++;
+    u /= 2;
+    v /= 2;
+    u *= 255;
+    v *= 255;
+    u = Math.round(u);
+    v = Math.round(v);
     setUvResult([u, v]);
   }
   useEffect(() => {
-    if (scanning) {
-      setInterval(() => {
-        switch (stage) {
-          case 0:
-            setScreenColor("yellow");
-            setStage(1);
-            break;
-          case 1:
-            setStage(2);
-            break;
-          case 2:
-            setStage(3);
-            break;
-          case 3:
-            setStage(4);
-            break;
-          case 4:
-            setStage(5);
-            break;
-          case 5:
-            setStage(6);
-            break;
-          case 6:
-            setStage(7);
-            break;
-          case 7:
-            flashScreen(0.5);
-            setStage(1);
-            break;
-          case 8:
-            takeLowReading();
-            flashScreen();
-            setStage(2);
-            break;
-          case 9:
-            calculateFullLux(takeHighReading());
-            flashScreen("red", 0.5);
-            setStage(3);
-            break;
-          case 10:
-            takeLowReading();
-            flashScreen("red", 1);
-            setStage(4);
-            break;
-          case 11:
-            calculateRedLux(takeHighReading());
-            flashScreen("green", 0.5);
-            setStage(5);
-            break;
-          case 12:
-            takeLowReading();
-            flashScreen("green", 1);
-            setStage(6);
-            break;
-          case 13:
-            takeHighReading(takeHighReading());
-            flashScreen("blue", 0.5);
-            setStage(7);
-            break;
-          case 14:
-            takeLowReading();
-            flashScreen("blue", 1);
-            setStage(8);
-            break;
-          case 15:
-            calculateBlueLux(takeHighReading());
-            calculateUV();
-            setScanning(false);
-            break;
-          default:
-            setScanning(false);
-            break;
-        }
-      }, 200);
-    } else {
-      setScreenColor("black");
-      setStage(0);
-    }
+    const interval = setInterval(() => {
+      if (scanning) {
+        setStage((prev) => prev + 1);
+      }
+    }, 200);
+    return () => {
+      clearInterval(interval);
+    };
   }, [scanning]);
   useEffect(() => {
     console.log(uvResult);
   }, [uvResult]);
   useEffect(() => {
-    console.log(stage);
+    if (stage < 7) {
+      setScreenColor("yellow");
+    } else if (stage < 8) {
+      flashScreen(0.5);
+    } else if (stage < 9) {
+      takeLowReading();
+      flashScreen();
+    } else if (stage < 10) {
+      calculateFullLux(takeHighReading());
+      flashScreen("red", 0.5);
+    } else if (stage < 11) {
+      takeLowReading();
+      flashScreen("red", 1);
+    } else if (stage < 12) {
+      calculateRedLux(takeHighReading());
+      flashScreen("green", 0.5);
+    } else if (stage < 13) {
+      takeLowReading();
+      flashScreen("green", 1);
+    } else if (stage < 14) {
+      calculateGreenLux(takeHighReading());
+      flashScreen("blue", 0.5);
+    } else if (stage < 15) {
+      takeLowReading();
+      flashScreen("blue", 1);
+    } else {
+      calculateBlueLux(takeHighReading());
+      calculateUV();
+      setStage(0);
+      setReadings([]);
+      setBlueLux(0);
+      setGreenLux(0);
+      setRedLux(0);
+      setFullLux(0);
+      setLowReading(0);
+      setScanning(false);
+    }
   }, [stage]);
   function startScan() {
     console.log("start scan");
+
     setScanning(true);
   }
   return (
     <>
-      <TouchableOpacity onPressIn={() => startScan}>
+      <TouchableOpacity onPressIn={() => startScan()} style={{ flex: 1 }}>
         <View
           style={{
             backgroundColor: screenColor,
-            zIndex: 10,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
+            flex: 1,
           }}
         />
       </TouchableOpacity>

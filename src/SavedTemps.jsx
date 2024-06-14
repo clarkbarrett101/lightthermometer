@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import LinkButton from "./LinkButton";
-import kelvin_table from "./Kelvin_Table";
+import { kelvin_table } from "./Kelvin_Table";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 

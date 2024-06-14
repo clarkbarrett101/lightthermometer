@@ -7,7 +7,7 @@ import Svg, {
   Rect,
   Circle,
 } from "react-native-svg";
-import kelvin_table from "./Kelvin_Table";
+import { kelvin_table } from "./Kelvin_Table";
 
 export default function Slider({ kelvin, panHandlers, min, max, hidden }) {
   const k = kelvin_table[kelvin];

@@ -29,7 +29,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
         top: 0,
         left: 0,
         zIndex: 10,
-        backgroundColor: "white",
+        backgroundColor: "black",
       }}
     >
       <Text
