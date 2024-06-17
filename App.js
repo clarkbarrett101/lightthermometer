@@ -9,12 +9,14 @@ import LightBooth from "./src/LightBooth";
 import Home from "./src/Home";
 import SavedTemps from "./src/SavedTemps";
 import PaintScan from "./src/PaintScan";
-SplashScreen.preventAutoHideAsync();
+import FindUV from "./src/FindUV";
+import ColorCheck from "./src/ColorCheck";
+//SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [kelvin, setKelvin] = useState(5500);
   const [newRoom, setNewRoom] = useState(false);
-  const [page, setPage] = React.useState("home");
+  const [page, setPage] = useState("home");
   const { hasPermission, requestPermission } = useCameraPermission();
   useEffect(() => {
     if (!hasPermission) {
@@ -25,8 +27,7 @@ export default function App() {
     (async () => {
       const { status } = await Brightness.requestPermissionsAsync();
     })();
-  }, []);
-
+  }, []); /*
   const pages = {
     home: <Home setPage={setPage} />,
     driver: <Driver setPage={setPage} kelvin={kelvin} setKelvin={setKelvin} />,
@@ -67,6 +68,12 @@ export default function App() {
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       {pages[page]}
+    </View>
+  );
+  */
+  return (
+    <View style={{ flex: 1 }}>
+      <ColorCheck />
     </View>
   );
 }
