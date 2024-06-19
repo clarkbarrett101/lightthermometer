@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 
 function CountDown({ setFlicker, setStartCountdown }) {
   const [countdown, setCountdown] = useState(5);
+  const [background, setBackground] = useState("white");
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev > 0) {
-          return prev - 1;
+          const color = (prev / 5) * 255;
+          setBackground(`rgb(${color},${color},${color})`);
+          return prev - 0.1;
         } else {
           setFlicker(true);
           setStartCountdown(false);
@@ -15,7 +18,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
           return 5;
         }
       });
-    }, 1000);
+    }, 100);
     return () => {
       clearInterval(interval);
     };
@@ -29,7 +32,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
         top: 0,
         left: 0,
         zIndex: 10,
-        backgroundColor: "white",
+        backgroundColor: background,
       }}
     >
       <Text
@@ -40,7 +43,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
           marginTop: "50%",
         }}
       >
-        {countdown}
+        {Math.round(countdown)}
       </Text>
     </View>
   );

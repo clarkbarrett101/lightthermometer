@@ -47,44 +47,43 @@ function Driver({ setPage, kelvin, setKelvin }) {
     }
   }
   function handleTakeReading() {
-    const reading = [luv[1], luv[2], kelvin];
+    const reading = [rgb[0], rgb[2], kelvin];
     setReadings((prev) => [...prev, reading]);
-    console.log(reading);
-    if (kelvin % 200 === 0) {
-      checkIfSwitch();
-    }
   }
 
-  function checkIfSwitch() {
+  function checkIfSwitch(kelvin) {
     if (readings.length < 2) {
       return;
     }
-    const control = readings[readings.length - 2];
-    const uDiff = luv[1] - control[0];
-    const vDiff = luv[2] - control[1];
+    const control = readings[1];
+    const controlBalance = control[0] / control[1];
+    const rbBalance = rgb[0] / rgb[2];
     console.log(
       kelvin,
       Math.round(control[0]),
       Math.round(control[1]),
-      Math.round(luv[1]),
-      Math.round(luv[2]),
-      Math.round(uDiff),
-      Math.round(vDiff)
+      Math.round(rgb[1]),
+      Math.round(rgb[2]),
+      Math.round(controlBalance * 100) / 100,
+      Math.round(rbBalance * 100) / 100
     );
     if (kelvin < 2000) {
       setCountUp(true);
+      return true;
     }
     if (countUp) {
-      if (uDiff > vDiff && kelvin >= 3000) {
+      if (rbBalance < controlBalance && kelvin >= 3000) {
         console.log("switch");
         setCountUp(false);
+        return false;
       }
     } else {
-      if (uDiff < vDiff) {
+      if (rbBalance > controlBalance) {
         handleReset();
         setPage("endscreen");
       }
     }
+    return countUp;
   }
   function handleReset() {
     setReadings([]);
@@ -111,13 +110,13 @@ function Driver({ setPage, kelvin, setKelvin }) {
           } else if (prev < 2000) {
             return prev + 200;
           } else if (prev < max) {
-            const modifier = countUp ? 500 : -100;
+            const modifier = checkIfSwitch(prev) ? 400 : -100;
             return prev + modifier;
           }
         });
-      }, 200);
+      }, 100);
     }
-  }, [flicker, countUp, kelvin]);
+  }, [flicker, kelvin]);
   function explainer() {
     return (
       <View
