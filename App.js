@@ -8,6 +8,7 @@ import Driver from "./src/Driver";
 import LightBooth from "./src/LightBooth";
 import Home from "./src/Home";
 import SavedTemps from "./src/SavedTemps";
+import EndScreen from "./src/EndScreen";
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -46,6 +47,7 @@ export default function App() {
         setNewRoom={setNewRoom}
       />
     ),
+    endscreen: <EndScreen setPage={setPage} />,
   };
   let [fontsLoaded] = useFonts({
     PoiretOne_400Regular,

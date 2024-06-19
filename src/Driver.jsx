@@ -7,15 +7,15 @@ import * as Brightness from "expo-brightness";
 import LinkButton from "./LinkButton";
 
 function Driver({ setPage, kelvin, setKelvin }) {
-  const min = 1800;
-  const [max, setMax] = useState(9000);
+  const min = 1600;
+  const max = 9000;
   const [flicker, setFlicker] = useState(false);
   const [luv, setLuv] = useState([0, 0, 0]);
   const [readings, setReadings] = useState([]);
-  const [result, setResult] = useState(0);
   const [startCountdown, setStartCountdown] = useState(false);
   const [brightness, setBrightness] = useState(1);
-  const [kelvinModifier, setKelvinModifier] = useState(1000);
+  const [countUp, setCountUp] = useState(true);
+  const [rgb, setRgb] = useState([0, 0, 0]);
 
   useEffect(() => {
     (async () => {
@@ -47,96 +47,50 @@ function Driver({ setPage, kelvin, setKelvin }) {
     }
   }
   function handleTakeReading() {
-    const reading = [luv[0], luv[1], kelvin];
+    const reading = [luv[1], luv[2], kelvin];
     setReadings((prev) => [...prev, reading]);
     console.log(reading);
+    if (kelvin % 200 === 0) {
+      checkIfSwitch();
+    }
   }
-  function kelvinSequence() {
-    const diffIndexs = handleFindIndex();
-    const data = readings;
-    if (kelvinModifier > 100) {
-      setKelvinModifier(100);
-      console.log(data[diffIndexs[0]], data[diffIndexs[1]]);
-      if (diffIndexs[0] > diffIndexs[1]) {
-        setMax(data[diffIndexs[0]][2]);
-        return data[diffIndexs[1]][2];
-      } else {
-        setMax(data[diffIndexs[1]][2]);
-        return data[diffIndexs[0]][2];
+
+  function checkIfSwitch() {
+    if (readings.length < 2) {
+      return;
+    }
+    const control = readings[readings.length - 2];
+    const uDiff = luv[1] - control[0];
+    const vDiff = luv[2] - control[1];
+    console.log(
+      kelvin,
+      Math.round(control[0]),
+      Math.round(control[1]),
+      Math.round(luv[1]),
+      Math.round(luv[2]),
+      Math.round(uDiff),
+      Math.round(vDiff)
+    );
+    if (kelvin < 2000) {
+      setCountUp(true);
+    }
+    if (countUp) {
+      if (uDiff > vDiff && kelvin >= 3000) {
+        console.log("switch");
+        setCountUp(false);
       }
     } else {
-      handleCalculateCam();
-      ejectLoop();
-    }
-  }
-  function handleFindIndex() {
-    const data = readings;
-    let diff = 100;
-    let diffIndex1 = 0;
-    let diffIndex2 = 1;
-    let diffArray = [];
-    const control = data[0];
-    console.log(control);
-    for (let i = 1; i < data.length - 1; i += 1) {
-      let uDiff = Math.abs(data[i][0] - control[0]);
-      let vDiff = Math.abs(data[i][1] - control[1]);
-      let uvDiff = Math.sqrt(uDiff ** 2 + vDiff ** 2);
-      uvDiff = Math.round(uvDiff * 100) / 100;
-      console.log(data[i][2], uvDiff);
-      diffArray.push(uvDiff);
-    }
-    diff = diffArray[0];
-
-    for (let i = 1; i < diffArray.length; i++) {
-      if (diffArray[i] < diff) {
-        diff = diffArray[i];
-        diffIndex2 = diffIndex1;
-        diffIndex1 = i;
+      if (uDiff < vDiff) {
+        handleReset();
+        setPage("endscreen");
       }
     }
-    return [diffIndex1, diffIndex2];
   }
-
-  function handleCalculateCam() {
-    const data = readings;
-    let diff = 100;
-    let diffIndex = 0;
-    let diffArray = [];
-    const control = data[0];
-    console.log(control);
-    for (let i = 2; i < data.length - 1; i += 1) {
-      let uDiff = Math.abs(data[i][0] - control[0]);
-      let vDiff = Math.abs(data[i][1] - control[1]);
-      let uvDiff = Math.sqrt(uDiff ** 2 + vDiff ** 2);
-      uvDiff = Math.round(uvDiff * 100) / 100;
-      console.log(data[i][2], uvDiff);
-      diffArray.push(uvDiff);
-    }
-    /* let diffArrayNormal = [];
-    diffArrayNormal.push(diffArray[0]);
-    for (let i = 1; i < diffArray.length - 1; i++) {
-      diffArrayNormal.push((diffArray[i] + diffArray[i + 1]) / 2);
-    }
-    diffArrayNormal.push(diffArray[diffArray.length - 1]);
-    console.log(diffArrayNormal);*/
-    diffIndex = diffArray.length - 1;
-    diff = diffArray[diffArray.length - 1];
-    for (let i = diffArray.length - 2; i > 0; i--) {
-      console.log(diffArray[i], diff);
-      if (diffArray[i] < diff) {
-        diff = diffArray[i];
-        diffIndex = i;
-      }
-    }
-    diffIndex += 2;
-    console.log(diffIndex);
-    setKelvin(diffIndex * 200 + min);
-    setPage("lightBooth");
+  function handleReset() {
+    setReadings([]);
+    setFlicker(false);
+    setStartCountdown(false);
   }
-  useEffect(() => {
-    console.log(result);
-  }, [result]);
-
   useEffect(() => {
     startFlicker();
     if (flicker) {
@@ -145,36 +99,25 @@ function Driver({ setPage, kelvin, setKelvin }) {
   }, [flicker, startCountdown]);
   useEffect(() => {
     if (flicker) {
-      const interval = setInterval(() => {
+      handleTakeReading();
+      if (kelvin >= max) {
+        handleReset();
+        setPage("endscreen");
+      }
+      setTimeout(() => {
         setKelvin((prev) => {
-          if (prev < max) {
-            if (prev === min) {
-              return prev + 200;
-            } else {
-              return prev + kelvinModifier;
-            }
-          } else {
-            return kelvinSequence();
+          if (prev < min) {
+            return min;
+          } else if (prev < 2000) {
+            return prev + 200;
+          } else if (prev < max) {
+            const modifier = countUp ? 500 : -100;
+            return prev + modifier;
           }
         });
-      }, 100);
-
-      return () => {
-        clearInterval(interval);
-      };
+      }, 200);
     }
-  }, [flicker]);
-  useEffect(() => {
-    if (flicker) {
-      handleTakeReading();
-    }
-  }, [kelvin, flicker]);
-  function ejectLoop() {
-    setFlicker(false);
-    setKelvin(min);
-    setReadings([]);
-  }
-
+  }, [flicker, countUp, kelvin]);
   function explainer() {
     return (
       <View
@@ -288,7 +231,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
           height={60}
         />
       </View>
-      <Cam luv={luv} setLuv={setLuv} />
+      <Cam luv={luv} setLuv={setLuv} setRgb={setRgb} />
       {startFlicker()}
     </>
   );

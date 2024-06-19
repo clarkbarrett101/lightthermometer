@@ -2,6 +2,7 @@ import LinkButton from "./LinkButton";
 import { View, Image, Text } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { Logo, LogoText, SloganText } from "./Logo";
 
 export default function Home({ setPage }) {
   return (
@@ -76,21 +77,13 @@ export default function Home({ setPage }) {
         >
           by
         </Text>
-        <Image
-          source={require("../assets/logo.png")}
+        <Logo
           style={{
             width: 72,
             height: 96,
             resizeMode: "contain",
             marginLeft: -4,
-          }}
-        />
-        <Image
-          source={require("../assets/slogan.png")}
-          style={{
-            width: 125,
-            resizeMode: "contain",
-            marginTop: -48,
+            zIndex: 3,
           }}
         />
       </View>
