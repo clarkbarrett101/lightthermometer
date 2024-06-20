@@ -8,9 +8,9 @@ function CountDown({ setFlicker, setStartCountdown }) {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev > 0) {
-          const color = (prev / 5) * 255;
+          const color = (prev / 5) * 225;
           setBackground(`rgb(${color},${color},${color})`);
-          return prev - 0.1;
+          return prev - 0.05;
         } else {
           setFlicker(true);
           setStartCountdown(false);
@@ -18,7 +18,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
           return 5;
         }
       });
-    }, 100);
+    }, 50);
     return () => {
       clearInterval(interval);
     };

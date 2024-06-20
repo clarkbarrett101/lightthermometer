@@ -36,7 +36,12 @@ function Cam({ luv, setLuv, setRgb }) {
   }, []);
   useEffect(() => {
     const interval = setInterval(() => {
-      setRgb(average.value);
+      let [r, g, b] = average.value;
+      const sum = r + g + b;
+      r = (r / sum) * 255;
+      g = (g / sum) * 255;
+      b = (b / sum) * 255;
+      setRgb([r, g, b]);
       const [l, u, v] = RGB2LUV(average.value);
       setLuv([l, u, v]);
     }, 50);

@@ -1,9 +1,88 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import Svg, { Defs, LinearGradient, Stop, G, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
 function Logo({ style }) {
-  const colors = [];
+  const colors = [
+    [0.556, 0.546, 0.002],
+    [0.515, 0.257, 0.003],
+    [0.42, 0.121, 0.003],
+    [0.153, 0.14, 0.003],
+    [0.107, 0.246, 0.003],
+    [0.086, 0.335, 0.003],
+    [0.086, 0.444, 0.003],
+    [0.058, 0.438, 0.002],
+    [0.014, 0.402, 0.003],
+    [0.992, 0.523, 0.002],
+    [0.94, 0.456, 0.002],
+    [0.917, 0.957, 0.001],
+    [0.773, 1, 0.001],
+    [0.74, 0.467, 0.002],
+    [0.678, 0.528, 0.002],
+    [0.627, 0.468, 0.002],
+    [0.599, 0.739, 0.002],
+    [0.578, 0.953, 0.002],
+    [0.598, 0.442, 0.002],
+    [0.604, 0.331, 0.003],
+    [0.699, 0.099, 0.003],
+    [0, 0.157, 0.003],
+    [0.026, 0.231, 0.003],
+    [0.991, 0.252, 0.003],
+    [0.931, 0.225, 0.003],
+    [0.898, 0.353, 0.002],
+    [0.736, 0.306, 0.002],
+    [0.631, 0.331, 0.003],
+    [0.82, 0.165, 0.003],
+    [0.801, 0.129, 0.003],
+    [0.697, 0.273, 0.003],
+  ];
+  const [offset, setOffset] = useState(0);
+
+  function HSL2HEX(hsl) {
+    if (!hsl) {
+      return "#000000";
+    }
+    hsl[0] = (hsl[0] + offset) % 1;
+    let [r, g, b] = HSL2RGB(hsl);
+    r = Math.round(r * 255);
+    g = Math.round(g * 255);
+    b = Math.round(b * 255);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setOffset((prev) => {
+        return (prev + 0.02) % 1;
+      });
+    }, 100);
+  }, [offset]);
+
+  function HSL2RGB(hsl) {
+    let h = hsl[0];
+    let s = hsl[1];
+    let l = hsl[2];
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return [r * 255, g * 255, b * 255];
+  }
 
   return (
     <>
@@ -32,75 +111,83 @@ function Logo({ style }) {
           </LinearGradient>
         </Defs>
         <G id="Layer_1_00000052096834633355662870000001173089789060665006_">
-          <Path id="A" d="M35 5L67 5 50 8z" fill="#43aee4" />
-          <Path id="B" d="M50 8L67 5 72 19z" fill="#8ee7f0" />
-          <Path id="C" d="M67 5l5 14 18 6L67 5z" fill="#c4fae0" />
-          <Path id="D" d="M72 19L88 42 90 25z" fill="#f4efb8" />
-          <Path id="E" d="M90 25.1L88 42l7 11.9-5-28.8z" fill="#f8d596" />
-          <Path id="F" d="M88 42L84 68 95 54z" fill="#f7bb7b" />
-          <Path id="G" d="M84 68v9.9l10.9-23.7L84 68z" fill="#f7ad5f" />
+          <Path id="A" d="M35 5L67 5 50 8z" fill={HSL2HEX(colors[0])} />
+          <Path id="B" d="M50 8L67 5 72 19z" fill={HSL2HEX(colors[1])} />
+          <Path id="C" d="M67 5l5 14 18 6L67 5z" fill={HSL2HEX(colors[2])} />
+          <Path id="D" d="M72 19L88 42 90 25z" fill={HSL2HEX(colors[3])} />
+          <Path
+            id="E"
+            d="M90 25.1L88 42l7 11.9-5-28.8z"
+            fill={HSL2HEX(colors[4])}
+          />
+          <Path id="F" d="M88 42L84 68 95 54z" fill={HSL2HEX(colors[5])} />
+          <Path
+            id="G"
+            d="M84 68v9.9l10.9-23.7L84 68z"
+            fill={HSL2HEX(colors[6])}
+          />
           <Path
             id="H"
             d="M84 68.2v9.9L67.3 88.8c-.1 0-.1 0-.1-.1L84 68.2c-.1-.1 0-.1 0 0z"
-            fill="#e48959"
+            fill={HSL2HEX(colors[7])}
           />
-          <Path id="I" d="M58 80L84 68 67 89z" fill="#e86e63" />
+          <Path id="I" d="M58 80L84 68 67 89z" fill={HSL2HEX(colors[8])} />
           <Path
             id="J"
             d="M58 80L38.3 92.8c-.1 0 0 .1 0 .1L66.9 89c.1 0 .1-.1 0-.1L58 80z"
-            fill="#d34249"
+            fill={HSL2HEX(colors[9])}
           />
-          <Path id="K" d="M25 75L58 80 38 93z" fill="#c64a77" />
+          <Path id="K" d="M25 75L58 80 38 93z" fill={HSL2HEX(colors[10])} />
           <Path
             id="L"
             d="M17.1 83l20.7 9.9c.1 0 .1 0 .1-.1L25 75.1h-.1L17 83h.1z"
-            fill="#890346"
+            fill={HSL2HEX(colors[11])}
           />
-          <Path id="M" d="M17 83L3 61.1 25 75l-8 8z" fill="#550085" />
-          <Path id="N" d="M25 75L18 45 3 61z" fill="#7a45be" />
+          <Path
+            id="M"
+            d="M17 83L3 61.1 25 75l-8 8z"
+            fill={HSL2HEX(colors[12])}
+          />
+          <Path id="N" d="M25 75L18 45 3 61z" fill={HSL2HEX(colors[13])} />
           <Path
             id="O"
             d="M17.9 44.9L5.2 35.1c-.1-.1-.2 0-.2.1L3 60.7c0 .1.1.2.2.1l14.7-15.6c.1-.2.1-.2 0-.3z"
-            fill="#433abc"
+            fill={HSL2HEX(colors[14])}
           />
-          <Path id="P" d="M5 35L18 45 23 16z" fill="#4f70da" />
-          <Path id="Q" d="M5.2 34.7L19 14l3.9 2v.1L5.2 34.7z" fill="#1f66cf" />
+          <Path id="P" d="M5 35L18 45 23 16z" fill={HSL2HEX(colors[15])} />
+          <Path
+            id="Q"
+            d="M5.2 34.7L19 14l3.9 2v.1L5.2 34.7z"
+            fill={HSL2HEX(colors[16])}
+          />
           <Path
             id="R"
             d="M34.8 5.2L23 16l-3.9-2v-.1l15.7-8.7c0-.1 0 0 0 0z"
-            fill="#0572d1"
+            fill={HSL2HEX(colors[17])}
           />
-          <Path id="S" d="M35 5L23 16 50 8z" fill="#5993e6" />
-          <Path id="T" d="M23 16L50 8 45 28z" fill="#76a2eb" />
-          <Path id="U" d="M50 8L72 19 45 28z" fill="#c3bbe4" />
+          <Path id="S" d="M35 5L23 16 50 8z" fill={HSL2HEX(colors[18])} />
+          <Path id="T" d="M23 16L50 8 45 28z" fill={HSL2HEX(colors[19])} />
+          <Path id="U" d="M50 8L72 19 45 28z" fill={HSL2HEX(colors[20])} />
+
           <Path
             id="U_00000004536478971625956850000015195855624793596571_"
             d="M72 19L88 42 72 51z"
-            fill="#f0afaf"
+            fill={HSL2HEX(colors[21])}
           />
-          <Path id="V" d="M88 42L84 68 72 51z" fill="#f0a496" />
-          <Path id="W" d="M72 51L84 68 58 80z" fill="#e78a8f" />
-          <Path id="X" d="M45 57L58 80 72 51z" fill="#df8daf" />
-          <Path id="Y" d="M45 57L25 75 58 80z" fill="#d365a8" />
-          <Path id="Z" d="M45 57L25 75 18 45z" fill="#986fd1" />
-          <Path id="AA" d="M45 28L23 16 18 45z" fill="#728ae3" />
-          <Path id="AD" d="M45 57L72 51 45 28z" fill="#d99fde" />
+          <Path id="V" d="M88 42L84 68 72 51z" fill={HSL2HEX(colors[22])} />
+          <Path id="W" d="M72 51L84 68 58 80z" fill={HSL2HEX(colors[23])} />
+          <Path id="X" d="M45 57L58 80 72 51z" fill={HSL2HEX(colors[24])} />
+          <Path id="Y" d="M45 57L25 75 58 80z" fill={HSL2HEX(colors[25])} />
+          <Path id="Z" d="M45 57L25 75 18 45z" fill={HSL2HEX(colors[26])} />
+          <Path id="AA" d="M45 28L23 16 18 45z" fill={HSL2HEX(colors[27])} />
+          <Path id="AD" d="M45 57L72 51 45 28z" fill={HSL2HEX(colors[28])} />
           <Path
             id="AD_00000146463678694408439720000016681489762218975122_"
             d="M72 19L72 51 45 28z"
-            fill="#dab0e4"
+            fill={HSL2HEX(colors[29])}
           />
-          <Path id="AE" d="M45 28L18 45 45 57z" fill="#8e7ddb" />
+          <Path id="AE" d="M45 28L18 45 45 57z" fill={HSL2HEX(colors[30])} />
         </G>
-        <Path
-          id="Layer_2_00000095305244942159244840000016817409941989083791_"
-          d="M37.9 92.8L67.1 88.9 84.2 77.9 95.2 54 90 25 67 5 35 5 19.1 14 5 35.2 3 61 17 83z"
-          display="none"
-          fill="none"
-          stroke="#000"
-          strokeWidth={0.5}
-          strokeMiterlimit={10}
-        />
         <LogoText />
         <SloganText />
       </Svg>

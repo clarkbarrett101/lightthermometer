@@ -48,6 +48,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
   }
   function handleTakeReading() {
     const reading = [rgb[0], rgb[2], kelvin];
+    console.log(reading);
     setReadings((prev) => [...prev, reading]);
   }
 
@@ -55,30 +56,30 @@ function Driver({ setPage, kelvin, setKelvin }) {
     if (readings.length < 2) {
       return;
     }
-    const control = readings[1];
-    const controlBalance = control[0] / control[1];
-    const rbBalance = rgb[0] / rgb[2];
+    const control = readings[0];
+    const rDiff = control[0] - rgb[0];
+    const bDiff = control[1] - rgb[2];
     console.log(
       kelvin,
       Math.round(control[0]),
       Math.round(control[1]),
       Math.round(rgb[1]),
       Math.round(rgb[2]),
-      Math.round(controlBalance * 100) / 100,
-      Math.round(rbBalance * 100) / 100
+      Math.round(rDiff),
+      Math.round(bDiff)
     );
     if (kelvin < 2000) {
       setCountUp(true);
       return true;
     }
     if (countUp) {
-      if (rbBalance < controlBalance && kelvin >= 3000) {
+      if (rDiff > bDiff && kelvin >= 3000) {
         console.log("switch");
         setCountUp(false);
         return false;
       }
     } else {
-      if (rbBalance > controlBalance) {
+      if (rDiff < bDiff) {
         handleReset();
         setPage("endscreen");
       }
@@ -106,6 +107,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
       setTimeout(() => {
         setKelvin((prev) => {
           if (prev < min) {
+            console.log(rgb[0], rgb[1], rgb[2]);
             return min;
           } else if (prev < 2000) {
             return prev + 200;
