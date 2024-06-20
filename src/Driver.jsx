@@ -54,7 +54,8 @@ function Driver({ setPage, kelvin, setKelvin }) {
     let diff = 100;
     let diffIndex = 0;
     let diffArray = [];
-    const control = data[0];
+    const control = data[1];
+
     console.log(control);
     for (let i = 2; i < data.length - 1; i += 1) {
       let uDiff = Math.abs(data[i][0] - control[0]);
