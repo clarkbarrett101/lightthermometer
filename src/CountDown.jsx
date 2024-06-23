@@ -8,7 +8,7 @@ function CountDown({ setFlicker, setStartCountdown }) {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev > 0) {
-          const color = (prev / 5) * 225;
+          const color = Math.min(prev * 225, 255);
           setBackground(`rgb(${color},${color},${color})`);
           return prev - 0.05;
         } else {

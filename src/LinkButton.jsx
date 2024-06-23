@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Image, TouchableOpacity, View } from "react-native";
+import { Text, Image, TouchableOpacity, View, Dimensions } from "react-native";
 import Logo from "./Logo";
 
 const LinkButton = ({
@@ -15,7 +15,9 @@ const LinkButton = ({
   setKelvin,
   onPress,
   padding,
+  imgPadding,
 }) => {
+  const heightRatio = Dimensions.get("window").height / 812;
   function textarea() {
     if (text === "") {
       return null;
@@ -52,13 +54,13 @@ const LinkButton = ({
           height: height ? height : 100,
           backgroundColor: "#FFFFAF",
           borderEndColor: "rgba(0, 0, 0, 0.2)",
-          borderEndWidth: 4,
-          borderBottomWidth: 4,
+          borderEndWidth: 4 * heightRatio,
+          borderBottomWidth: 4 * heightRatio,
           borderColor: "rgba(0, 0, 0, 0.2)",
-          borderRadius: 16,
+          borderRadius: 16 * heightRatio,
           justifyContent: "center",
           alignItems: "center",
-          gap: 8,
+          gap: 8 * heightRatio,
           display: hidden ? "none" : "flex",
           flexDirection: "row",
           padding: padding ? padding : 4,
@@ -71,6 +73,7 @@ const LinkButton = ({
             resizeMode: "contain",
             maxHeight: height ? height - 4 : "auto",
             maxWidth: width ? width - 4 : "auto",
+            height: imgPadding ? height - imgPadding : height - 4,
           }}
         />
         {textarea()}

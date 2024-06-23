@@ -38,9 +38,9 @@ function Cam({ luv, setLuv, setRgb }) {
     const interval = setInterval(() => {
       let [r, g, b] = average.value;
       const sum = r + g + b;
-      r = (r / sum) * 255;
-      g = (g / sum) * 255;
-      b = (b / sum) * 255;
+      r = (r / sum) * 100;
+      g = (g / sum) * 100;
+      b = (b / sum) * 100;
       setRgb([r, g, b]);
       const [l, u, v] = RGB2LUV(average.value);
       setLuv([l, u, v]);

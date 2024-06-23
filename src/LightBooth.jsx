@@ -9,9 +9,10 @@ import * as Brightness from "expo-brightness";
 
 export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
   const sw = Dimensions.get("window").width;
+
   const sh = Dimensions.get("window").height;
+  const heightRatio = sh / 812;
   const preloadKelvin = kelvin_table[1000];
-  const [touchPosition, setTouchPosition] = useState(0);
   const [rgb, setRgb] = useState([255, 249, 253]);
   const min = 2000;
   const max = 9000;
@@ -28,7 +29,7 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
 
   function handleTouchStart(event) {
     const { locationX } = event.nativeEvent;
-    const pos = locationX / sw;
+    const pos = (locationX / sw) * 0.9 - 0.05;
     const kelvin = Math.round((pos * max + min) / step) * step;
     if (kelvin < min) {
       setKelvin(min);
@@ -43,7 +44,7 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
   }
   function handleTouchMove(event) {
     const { locationX } = event.nativeEvent;
-    const pos = locationX / sw;
+    const pos = (locationX / sw) * 0.9 - 0.05;
     const kelvin = Math.round((pos * max + min) / step) * step;
     if (kelvin < min) {
       setKelvin(min);
@@ -64,13 +65,14 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
       <View
         hidden={hideUI}
         style={{
-          padding: 20,
+          padding: 20 * heightRatio,
           width: "100%",
           height: "100%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
+          textAlign: "center",
           gap: 20,
         }}
       >
@@ -79,15 +81,15 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
             <Text
               style={{
                 color: "black",
-                fontSize: 24,
+                fontSize: 24 * heightRatio,
                 fontFamily: "Poiret One",
                 fontWeight: "400",
                 wordWrap: "break-word",
                 display: hideUI ? "none" : "flex",
+                textAlign: "center",
               }}
             >
-              Choose a temperature to simulate specific lighting conditions,
-              maximize brightness for best results.
+              Choose a temperature to simulate specific lighting conditions.
             </Text>
           </View>
         </View>
@@ -97,12 +99,13 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
           panHandlers={panResponder.panHandlers}
           kelvin={kelvin}
           hidden={hideUI}
+          heightRatio={heightRatio}
         />
         <Text
           hidden={hideUI}
           style={{
             color: "black",
-            fontSize: 48,
+            fontSize: 48 * heightRatio,
             justifySelf: "center",
             alignSelf: "center",
             fontFamily: "Poiret One",
@@ -125,8 +128,8 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
             target="home"
             setPage={setPage}
             icon={require("../assets/back.png")}
-            width={80}
-            height={50}
+            width={80 * heightRatio}
+            height={50 * heightRatio}
             hidden={hideUI}
           />
           <LinkButton
@@ -134,9 +137,9 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
             target="savedTemps"
             setPage={setPage}
             icon={require("../assets/bookmark.png")}
-            width={100}
-            height={50}
-            fontSize={24}
+            width={100 * heightRatio}
+            height={50 * heightRatio}
+            fontSize={24 * heightRatio}
             kelvin={kelvin}
             setKelvin={setNewRoom}
             onPress={() => setNewRoom(true)}
@@ -149,8 +152,8 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
           >
             <View
               style={{
-                width: 140,
-                height: 50,
+                width: 140 * heightRatio,
+                height: 50 * heightRatio,
                 display: "flex",
                 flexDirection: "row",
                 backgroundColor: hideUI ? "rgba(0,0,0,.1)" : "#FFFFAF",
@@ -171,8 +174,8 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
                     : require("../assets/eye-open.png")
                 }
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 40 * heightRatio,
+                  height: 40 * heightRatio,
                   resizeMode: "contain",
                 }}
               />
@@ -180,7 +183,7 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
                 style={{
                   textAlign: "center",
                   color: "black",
-                  fontSize: 24,
+                  fontSize: 24 * heightRatio,
                   wordWrap: "break-word",
                   fontFamily: "Poiret One",
                 }}

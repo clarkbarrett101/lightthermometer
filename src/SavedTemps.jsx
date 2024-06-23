@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   TextInput,
+  Dimensions,
 } from "react-native";
 import LinkButton from "./LinkButton";
 import kelvin_table from "./Kelvin_Table";
@@ -21,6 +22,7 @@ export default function SavedTemps({
   setNewRoom,
 }) {
   const [rawData, setRawData] = useState([]);
+  const heightRatio = Dimensions.get("window").height / 812;
 
   useEffect(() => {
     getRawData();
@@ -59,6 +61,7 @@ export default function SavedTemps({
           roomIdx={i}
           rawData={rawData}
           setRawData={setRawData}
+          heightRatio={heightRatio}
         />
       );
     }
@@ -92,7 +95,7 @@ export default function SavedTemps({
           style={{
             width: "100%",
             height: "100%",
-            top: 10,
+            top: 10 * heightRatio,
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
@@ -105,11 +108,11 @@ export default function SavedTemps({
             style={{
               textAlign: "center",
               color: "black",
-              fontSize: 36,
+              fontSize: 36 * heightRatio,
               fontFamily: "Poiret One",
               fontWeight: "400",
               wordWrap: "break-word",
-              padding: 16,
+              padding: 16 * heightRatio,
             }}
           >
             My Saved Temperatures
@@ -131,6 +134,7 @@ function Temp({
   roomIdx,
   rawData,
   setRawData,
+  heightRatio,
 }) {
   const [name, setName] = useState(label);
   useEffect(() => {
@@ -157,12 +161,12 @@ function Temp({
     <View
       style={{
         backgroundColor: tempColorString,
-        borderRadius: 22,
+        borderRadius: 22 * heightRatio,
         justifyContent: "space-between",
         alignItems: "center",
         display: "flex",
         flexDirection: "row",
-        padding: 8,
+        padding: 8 * heightRatio,
       }}
     >
       <TouchableOpacity
@@ -170,12 +174,12 @@ function Temp({
           flexDirection: "row",
           backgroundColor: "rgba(255, 125, 125, 0.5)",
           zIndex: 1,
-          borderRadius: 12,
-          padding: 4,
-          borderEndWidth: 2,
-          borderBottomWidth: 2,
-          paddingLeft: 12,
-          paddingRight: 12,
+          borderRadius: 12 * heightRatio,
+          padding: 4 * heightRatio,
+          borderEndWidth: 2 * heightRatio,
+          borderBottomWidth: 2 * heightRatio,
+          paddingLeft: 12 * heightRatio,
+          paddingRight: 12 * heightRatio,
           borderColor: "rgba(0, 0, 0, 0.1)",
         }}
         onPress={() => {
@@ -184,7 +188,7 @@ function Temp({
       >
         <Text
           style={{
-            fontSize: 24,
+            fontSize: 24 * heightRatio,
             fontWeight: "600",
             color: "white",
           }}
@@ -206,7 +210,7 @@ function Temp({
           style={{
             textAlign: "center",
             color: "black",
-            fontSize: 32,
+            fontSize: 32 * heightRatio,
             fontFamily: "Poiret One",
             fontWeight: "400",
             wordWrap: "break-word",
@@ -227,13 +231,13 @@ function Temp({
           style={{
             textAlign: "center",
             color: "black",
-            fontSize: 24,
+            fontSize: 24 * heightRatio,
             justifyContent: "center",
             alignItems: "center",
             fontFamily: "Poiret One",
             fontWeight: "400",
             wordWrap: "break-word",
-            lineHeight: 42,
+            lineHeight: 42 * heightRatio,
           }}
         >
           {temp} K
@@ -248,15 +252,15 @@ function Temp({
         <Image
           source={require("../assets/lightbooth.png")}
           style={{
-            height: 48,
-            width: 48,
+            height: 48 * heightRatio,
+            width: 48 * heightRatio,
             resizeMode: "contain",
             borderWidth: 1,
             borderColor: "rgba(0, 0, 0, 0.2)",
-            borderRadius: 12,
+            borderRadius: 12 * heightRatio,
             backgroundColor: "rgba(255, 255, 255, 0.5)",
-            borderEndWidth: 4,
-            borderBottomWidth: 4,
+            borderEndWidth: 4 * heightRatio,
+            borderBottomWidth: 4 * heightRatio,
           }}
         />
       </TouchableOpacity>

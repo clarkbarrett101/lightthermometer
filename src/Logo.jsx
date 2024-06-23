@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Svg, { Defs, LinearGradient, Stop, G, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
-function Logo({ style }) {
+function Logo({ style, heightRatio = 1 }) {
   const colors = [
     [0.556, 0.546, 0.002],
     [0.515, 0.257, 0.003],
@@ -56,7 +56,7 @@ function Logo({ style }) {
       setOffset((prev) => {
         return (prev + 0.02) % 1;
       });
-    }, 100);
+    }, 33);
   }, [offset]);
 
   function HSL2RGB(hsl) {
@@ -188,20 +188,20 @@ function Logo({ style }) {
           />
           <Path id="AE" d="M45 28L18 45 45 57z" fill={HSL2HEX(colors[30])} />
         </G>
-        <LogoText />
-        <SloganText />
       </Svg>
+      <LogoText style={style} heightRatio={heightRatio} />
+      <SloganText style={style} heightRatio={heightRatio} />
     </>
   );
 }
-function LogoText({ style }) {
+function LogoText({ style, heightRatio = 1 }) {
   return (
     <Svg
       id="Layer_2"
       data-name="Layer 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 556.37 157.19"
-      style={{ y: 0 }}
+      style={{ ...style, marginTop: -95 * heightRatio }}
     >
       <Defs>
         <LinearGradient
@@ -243,9 +243,17 @@ function LogoText({ style }) {
     </Svg>
   );
 }
-function SloganText({ style }) {
+function SloganText({ style, heightRatio = 1 }) {
   return (
-    <Svg viewBox="0 0 75.11 19.4" style={{ zIndex: 10 }}>
+    <Svg
+      viewBox="0 0 75.11 19.4"
+      style={{
+        ...style,
+        marginTop: -50 * heightRatio,
+        margin: 0,
+        width: 70 * heightRatio,
+      }}
+    >
       <Defs>
         <LinearGradient
           id="New_Gradient_Swatch"

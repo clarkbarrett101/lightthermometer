@@ -9,7 +9,14 @@ import Svg, {
 } from "react-native-svg";
 import kelvin_table from "./Kelvin_Table";
 
-export default function Slider({ kelvin, panHandlers, min, max, hidden }) {
+export default function Slider({
+  kelvin,
+  panHandlers,
+  min,
+  max,
+  hidden,
+  heightRatio,
+}) {
   const k = kelvin_table[kelvin];
   function colorString(kelvinLevel) {
     const k = kelvin_table[kelvinLevel];
@@ -27,7 +34,7 @@ export default function Slider({ kelvin, panHandlers, min, max, hidden }) {
       );
     });
   }
-  const iconSize = 25;
+  const iconSize = 25 * heightRatio;
   if (hidden) {
     return null;
   }
@@ -69,7 +76,7 @@ export default function Slider({ kelvin, panHandlers, min, max, hidden }) {
       </View>
       <Svg
         width={"100%"}
-        height={"5%"}
+        height={5 * heightRatio + "%"}
         viewBox="0 0 908 58"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

@@ -7,7 +7,9 @@ function Flicker({ kelvin, setKelvin, flicker, setFlicker }) {
 
   useEffect(() => {
     if (kelvin >= 2000) {
-      const [r, g, b] = kelvin_table[kelvin];
+      let [r, g, b] = kelvin_table[kelvin];
+      g *= 1.5;
+      g = Math.min(g, 255);
       setScreenColor(`rgb(${r},${g},${b})`);
     } else {
       setScreenColor("black");
