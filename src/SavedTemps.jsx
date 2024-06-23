@@ -70,7 +70,14 @@ export default function SavedTemps({
 
   return (
     <>
-      <View style={{ position: "absolute", left: 10, top: 60, zIndex: 2 }}>
+      <View
+        style={{
+          position: "absolute",
+          left: 10,
+          top: 60 * heightRatio,
+          zIndex: 2,
+        }}
+      >
         <LinkButton
           icon={require("../assets/back.png")}
           target="home"
@@ -113,6 +120,7 @@ export default function SavedTemps({
               fontWeight: "400",
               wordWrap: "break-word",
               padding: 16 * heightRatio,
+              width: "80%",
             }}
           >
             My Saved Temperatures
@@ -188,7 +196,7 @@ function Temp({
       >
         <Text
           style={{
-            fontSize: 24 * heightRatio,
+            fontSize: 24,
             fontWeight: "600",
             color: "white",
           }}

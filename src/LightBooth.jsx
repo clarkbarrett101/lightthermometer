@@ -73,7 +73,7 @@ export default function LightBooth({ setPage, kelvin, setKelvin, setNewRoom }) {
           alignItems: "center",
           flexDirection: "column",
           textAlign: "center",
-          gap: 20,
+          gap: 20 * (heightRatio < 1 ? heightRatio : 1),
         }}
       >
         <View hidden={hideUI} style={{ flex: 1 }}>

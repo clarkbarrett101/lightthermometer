@@ -76,6 +76,10 @@ function Driver({ setPage, kelvin, setKelvin }) {
     ) {
       nearMiss = true;
     }
+    if (readings.length > 4 && Math.abs(uDiff) + Math.abs(vDiff) < 2) {
+      handleReset();
+      setPage("endscreen");
+    }
     console.log(
       kelvin,
       Math.round(control[0]),
@@ -87,7 +91,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
       nearMiss
     );
 
-    if (kelvin < 2000) {
+    if (kelvin <= 2000) {
       setCountUp(true);
       return true;
     }

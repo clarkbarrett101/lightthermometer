@@ -76,7 +76,7 @@ export default function Slider({
       </View>
       <Svg
         width={"100%"}
-        height={5 * heightRatio + "%"}
+        height={5 * (heightRatio > 1 ? heightRatio : 1) + "%"}
         viewBox="0 0 908 58"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
