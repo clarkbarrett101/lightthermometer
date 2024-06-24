@@ -11,6 +11,7 @@ import SavedTemps from "./src/SavedTemps";
 import PaintScan from "./src/PaintScan";
 import FindUV from "./src/FindUV";
 import ColorCheck from "./src/ColorCheck";
+import PaintReader from "./src/PaintReader";
 //SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -73,7 +74,7 @@ export default function App() {
   */
   return (
     <View style={{ flex: 1 }}>
-      <ColorCheck />
+      <PaintReader />
     </View>
   );
 }
