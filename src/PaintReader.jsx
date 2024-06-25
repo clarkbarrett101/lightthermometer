@@ -4,11 +4,16 @@ import * as Brightness from "expo-brightness";
 import Cam from "./Cam";
 
 export default function PaintReader() {
+  const list = [
+    6788, 6800, 6817, 6818, 6820, 6883, 6897, 6896, 6903, 6908, 6909, 6912,
+    6967, 6971, 7034, 7053, 7109, 7110, 7112, 7113, 7114, 7534, 7577, 7602,
+    7622, 7748, 7749, 9063, 9150,
+  ];
   const [screenColor, setScreenColor] = useState("black");
   const [luv, setLuv] = useState([0, 0, 0]);
   const [rgb, setRgb] = useState([0, 0, 0]);
   const [readings, setReadings] = useState([]);
-  const [round, setRound] = useState(5);
+  const [round, setRound] = useState(10);
   Brightness.setBrightnessAsync(1);
   function flashScreen(color = "white", intensity = 1) {
     let [r, g, b] =
@@ -28,15 +33,19 @@ export default function PaintReader() {
   }
   useEffect(() => {
     if (round < 4) {
-      takeReading();
+      takeReading(1);
+    } else if (round < 8) {
+      takeReading(0.5);
+    } else if (round < 9) {
+      takeReading(0);
     } else {
-      flashScreen("black", 1);
-      console.log(readings);
+      setScreenColor("black");
+      console.log(readings, list[readings.length / 9]);
     }
   }, [round]);
   const colors = ["white", "red", "green", "blue"];
-  function takeReading() {
-    flashScreen(colors[round], 1);
+  function takeReading(intensity) {
+    flashScreen(colors[round % 4], intensity);
     setTimeout(
       () => {
         const reading = [round, rgb[0], rgb[1], rgb[2]];
