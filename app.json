@@ -2,7 +2,7 @@
   "expo": {
     "name": "light-thermometer",
     "slug": "light-thermometer",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.clarkbarrett101.light-thermometer",
       "infoPlist": {
-        "NSCameraUsageDescription": "Light Thermometer needs access to your Camera."
+        "NSCameraUsageDescription": "Light thermometer needs access to your camera to take real time color measurements."
       }
     },
     "android": {
@@ -35,13 +35,13 @@
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "Light Thermometer needs access to your Camera."
+          "cameraPermissionText": "Light thermometer needs access to your camera to take real time color measurements"
         }
       ],
       "expo-font",[
       "expo-camera",
         {
-          "cameraPermission": "Light Thermometer needs access to your Camera."
+          "cameraPermission": "Light thermometer needs access to your camera to take real time color measurements"
         }]
     ],
     "extra": {

@@ -16,8 +16,9 @@ function Driver({ setPage, kelvin, setKelvin }) {
   const [readings, setReadings] = useState([]);
   const [startCountdown, setStartCountdown] = useState(false);
   const [brightness, setBrightness] = useState(1);
-  const [countUp, setCountUp] = useState(true);
-  const [safety, setSafety] = useState(false);
+  cosnt[(control, setControl)] = useState([0, 0, 0]);
+  // const [countUp, setCountUp] = useState(true);
+  //  const [safety, setSafety] = useState(false);
   const [rgb, setRgb] = useState([0, 0, 0]);
   const [noReadings, setNoReadings] = useState(0);
   const heightRatio = Dimensions.get("window").height / 812;
@@ -51,11 +52,33 @@ function Driver({ setPage, kelvin, setKelvin }) {
     }
   }
   function handleTakeReading() {
-    const reading = [luv[1], luv[2], kelvin];
-    console.log(reading);
-    setReadings((prev) => [...prev, reading]);
+    const reading = [luv[1], luv[2]];
+    if (control[2] === 0) {
+      setControl(reading);
+    } else {
+      const diff = [
+        Math.abs(control[0] - reading[0]) + Math.abs(control[1] - reading[1]),
+        kelvin,
+      ];
+      setReadings((prev) => [...prev, diff]);
+      if (diff[0] < 1) {
+        setNoReadings((prev) => prev + 1);
+      }
+    }
   }
 
+  function calculateTemp() {
+    let diff = readings[0][0];
+    let diffindex = 0;
+    for (let i = 1; i < readings.length; i++) {
+      if (readings[i][0] < diff) {
+        diff = readings[i][0];
+        diffindex = i;
+      }
+    }
+    return readings[diffindex][1];
+  }
+  /*
   function checkIfSwitch(kelvin) {
     if (readings.length < 2) {
       return;
@@ -115,11 +138,12 @@ function Driver({ setPage, kelvin, setKelvin }) {
     }
     return countUp;
   }
+    */
   function handleReset() {
     setReadings([]);
     setFlicker(false);
-    setCountUp(true);
-    setStartCountdown(false);
+    // setCountUp(true);
+    //setStartCountdown(false);
     setNoReadings(0);
   }
   useEffect(() => {
@@ -140,24 +164,22 @@ function Driver({ setPage, kelvin, setKelvin }) {
         return;
       }
       if (kelvin >= max) {
-        if (safety) {
-          setSafety(false);
-          setKelvin(max - 1500);
-        } else {
-          handleReset();
-          setPage("endscreen");
-        }
+        //  if (safety) {
+        //   setSafety(false);
+        //   setKelvin(max - 1500);
+        //  } else {
+        setKelvin(calculateTemp());
+        handleReset();
+        setPage("endscreen");
+        //}
         return;
       }
       setTimeout(() => {
         setKelvin((prev) => {
           if (prev < min) {
             return min;
-          } else if (prev < 2000) {
-            return prev + 200;
           } else {
-            const modifier = checkIfSwitch(prev) ? 500 : -100;
-            return prev + modifier < max ? prev + modifier : max;
+            return prev + 200;
           }
         });
       }, 100);
