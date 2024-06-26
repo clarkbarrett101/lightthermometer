@@ -2,7 +2,7 @@
   "expo": {
     "name": "light-thermometer",
     "slug": "light-thermometer",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,8 @@
       "bundleIdentifier": "com.clarkbarrett101.light-thermometer",
       "infoPlist": {
         "NSCameraUsageDescription": "Light thermometer needs access to your camera to take real time color measurements."
-      }
+      },
+      "buildNumber": "5"
     },
     "android": {
       "adaptiveIcon": {
