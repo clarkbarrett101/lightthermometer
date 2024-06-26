@@ -2,7 +2,7 @@
   "expo": {
     "name": "light-thermometer",
     "slug": "light-thermometer",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "light",
@@ -23,9 +23,7 @@
         "foregroundImage": "./assets/app_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.CAMERA"
-      ],
+      "permissions": ["android.permission.CAMERA"],
       "package": "com.clarkbarrett101.lightthermometer"
     },
     "web": {
@@ -38,11 +36,13 @@
           "cameraPermissionText": "Light thermometer needs access to your camera to take real time color measurements"
         }
       ],
-      "expo-font",[
-      "expo-camera",
+      "expo-font",
+      [
+        "expo-camera",
         {
           "cameraPermission": "Light thermometer needs access to your camera to take real time color measurements"
-        }]
+        }
+      ]
     ],
     "extra": {
       "eas": {

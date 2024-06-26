@@ -8,8 +8,10 @@ function CountDown({ setFlicker, setStartCountdown }) {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev > 0) {
-          const color = Math.min(prev * 225, 255);
-          setBackground(`rgb(${color},${color},${color})`);
+          if (prev < 1.25) {
+            const color = Math.min(255 * (prev - 0.25), 255);
+            setBackground(`rgb(${color},${color},${color})`);
+          }
           return prev - 0.05;
         } else {
           setFlicker(true);

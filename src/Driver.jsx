@@ -8,7 +8,7 @@ import LinkButton from "./LinkButton";
 import { Dimensions } from "react-native";
 
 function Driver({ setPage, kelvin, setKelvin }) {
-  const min = 1600;
+  const min = 1800;
   const max = 9000;
   const readCap = 100;
   const [flicker, setFlicker] = useState(false);
@@ -16,9 +16,9 @@ function Driver({ setPage, kelvin, setKelvin }) {
   const [readings, setReadings] = useState([]);
   const [startCountdown, setStartCountdown] = useState(false);
   const [brightness, setBrightness] = useState(1);
-  cosnt[(control, setControl)] = useState([0, 0, 0]);
-  // const [countUp, setCountUp] = useState(true);
-  //  const [safety, setSafety] = useState(false);
+  //const [control, setControl] = useState([0, 0, 0]);
+  const [countUp, setCountUp] = useState(true);
+  const [safety, setSafety] = useState(false);
   const [rgb, setRgb] = useState([0, 0, 0]);
   const [noReadings, setNoReadings] = useState(0);
   const heightRatio = Dimensions.get("window").height / 812;
@@ -53,32 +53,38 @@ function Driver({ setPage, kelvin, setKelvin }) {
   }
   function handleTakeReading() {
     const reading = [luv[1], luv[2]];
-    if (control[2] === 0) {
+    /* if (control[2] === 0) {
       setControl(reading);
     } else {
       const diff = [
         Math.abs(control[0] - reading[0]) + Math.abs(control[1] - reading[1]),
         kelvin,
       ];
+      console.log(
+        Math.round(control[0] - reading[0]),
+        Math.round(control[1] - reading[1])
+      );
       setReadings((prev) => [...prev, diff]);
       if (diff[0] < 1) {
         setNoReadings((prev) => prev + 1);
       }
     }
+      */
+    setReadings((prev) => [...prev, reading]);
   }
 
   function calculateTemp() {
-    let diff = readings[0][0];
-    let diffindex = 0;
-    for (let i = 1; i < readings.length; i++) {
-      if (readings[i][0] < diff) {
-        diff = readings[i][0];
-        diffindex = i;
-      }
+    let diffArray = [];
+    for (let i = 3; i < readings.length; i++) {
+      diffArray.push(
+        readings[i][0] - readings[i - 1][0] < 0 &&
+          readings[i][0] - readings[i + 1][0] < 0
+      );
     }
-    return readings[diffindex][1];
+    console.log(diffArray);
+    return 5000;
   }
-  /*
+
   function checkIfSwitch(kelvin) {
     if (readings.length < 2) {
       return;
@@ -89,6 +95,7 @@ function Driver({ setPage, kelvin, setKelvin }) {
     if (Math.abs(uDiff) < 0.5 && Math.abs(vDiff) < 0.5) {
       setNoReadings((prev) => prev + 1);
     }
+    console.log(uDiff, vDiff);
     const lastUdiff = control[0] - readings[readings.length - 1][0];
     const lastVdiff = control[1] - readings[readings.length - 1][1];
     let nearMiss = false;
@@ -99,7 +106,8 @@ function Driver({ setPage, kelvin, setKelvin }) {
     ) {
       nearMiss = true;
     }
-    if (readings.length > 4 && Math.abs(uDiff) + Math.abs(vDiff) < 2) {
+    if (readings.length > 4 && Math.abs(uDiff) + Math.abs(vDiff) < 1.5) {
+      console.log("bullseye reached");
       handleReset();
       setPage("endscreen");
     }
@@ -132,18 +140,19 @@ function Driver({ setPage, kelvin, setKelvin }) {
           console.log("safety on");
           return true;
         }
+        console.log("double switch reached");
         handleReset();
         setPage("endscreen");
       }
     }
     return countUp;
   }
-    */
+
   function handleReset() {
     setReadings([]);
     setFlicker(false);
-    // setCountUp(true);
-    //setStartCountdown(false);
+    setCountUp(true);
+    setStartCountdown(false);
     setNoReadings(0);
   }
   useEffect(() => {
@@ -156,30 +165,36 @@ function Driver({ setPage, kelvin, setKelvin }) {
     if (flicker) {
       handleTakeReading();
       if (noReadings > 5) {
+        console.log("no readings reached");
         handleReset();
       }
       if (readings.length > readCap) {
+        console.log("cap reached");
         handleReset();
         setPage("endscreen");
         return;
       }
       if (kelvin >= max) {
-        //  if (safety) {
-        //   setSafety(false);
-        //   setKelvin(max - 1500);
-        //  } else {
-        setKelvin(calculateTemp());
-        handleReset();
-        setPage("endscreen");
-        //}
+        if (safety) {
+          setSafety(false);
+          setKelvin(max - 1500);
+        } else {
+          setKelvin(max);
+          console.log("max reached");
+          handleReset();
+          setPage("endscreen");
+        }
         return;
       }
       setTimeout(() => {
         setKelvin((prev) => {
           if (prev < min) {
             return min;
+          } else if (prev < 2000) {
+            return 2000;
           } else {
-            return prev + 200;
+            let modifier = checkIfSwitch(prev) ? 400 : -100;
+            return prev + modifier;
           }
         });
       }, 100);
